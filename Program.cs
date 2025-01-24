@@ -7,14 +7,14 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+ options.UseSqlServer(builder.Configuration.GetConnectionString("default"))
+);
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
- options.UseSqlServer(builder.Configuration.GetConnectionString("default"))
-);
 
 builder.Services.AddTransient<ApplicationDbContext>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
@@ -36,15 +36,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-           Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
-    RequestPath = "/Resources"
-});
+app.UseStaticFiles();
 
 app.UseCors(); 
 
 app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
+
+// https://ravindradevrani.medium.com/image-upload-crud-operations-in-net-core-apis-7407f111d2f4
+// https://github.com/rd003/ImageManipulation_APIs_DotNetCore/blob/master/ImageManipulation.Data/ImageManipulation.Data.csproj
